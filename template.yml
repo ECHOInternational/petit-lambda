@@ -28,7 +28,7 @@ Parameters:
       not set, or is inaccurate, the "self" links returned in the payload will
       be incorrect.
     Type: String
-    Default: !Sub "https://REPLACEME.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+    Default: "https://APINAME.execute-api.REGION.amazonaws.com/STAGE/"
   ArtifactsBucket:
     Description: >-
       You must provide the bucket name where the petit-api.yml file has been
