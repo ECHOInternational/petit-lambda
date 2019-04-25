@@ -39,5 +39,17 @@ module Petit
         expect(config.service_base_url).to eq('http://link.me')
       end
     end
+    describe '#cross_origin_domain' do
+      it "default value is '*'" do
+        expect(Configuration.new.cross_origin_domain).to eq('*')
+      end
+    end
+    describe '#cross_origin_domain=' do
+      it 'can set value' do
+        config = Configuration.new
+        config.cross_origin_domain = 'http://link.it'
+        expect(config.cross_origin_domain).to eq('http://link.it')
+      end
+    end
   end
 end

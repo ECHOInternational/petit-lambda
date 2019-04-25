@@ -21,13 +21,14 @@ module Petit
 
   # Configuration class for Petit.
   class Configuration
-    attr_accessor :db_table_name, :api_base_url, :service_base_url
+    attr_accessor :db_table_name, :api_base_url, :service_base_url, :cross_origin_domain
 
     # Default configuration values
     def initialize
       @db_table_name = 'shortcodes'
       @api_base_url = 'http://localhost'
       @service_base_url = 'http://change.me'
+      @cross_origin_domain = '*'
     end
   end
 end

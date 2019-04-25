@@ -5,6 +5,7 @@
 .yardoc
 .env
 .aws-sam
+.ruby-gemset
 InstalledFiles
 _yardoc
 coverage
@@ -21,3 +22,4 @@ tmp
 *.o
 *.a
 mkmf.log
+serverless-output.yaml
