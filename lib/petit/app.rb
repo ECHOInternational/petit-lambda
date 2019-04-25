@@ -77,6 +77,12 @@ module Petit
     # Finds and returns a single shortcode object by its name.
     # If no shortcode is found by that name a 404 (Not Found) response is issued
     get '*/shortcodes/:shortcode' do
+      # Sinatra generates HEAD methods directly from the GET method, by checking for the 
+      # REQUEST_METHOD we can determine if the request was actually "HEAD" and act
+      # accordingly.
+      if request.env["REQUEST_METHOD"] == "HEAD"
+        response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
+      end
       shortcode = Petit::Shortcode.find_by_name(params[:shortcode])
       if shortcode.nil?
         return_not_found
@@ -85,18 +91,6 @@ module Petit
       end
     end
 
-    # @method api_head_shortcode
-    # @overload head 'api/v1/shortcodes/:shortcode'
-    # @param shortcode [String] the shortcode to find in the database
-    # Returns 200 if found 404 if not
-    head '*/shortcodes/:shortcode' do
-      shortcode = Petit::Shortcode.find_by_name(params[:shortcode])
-      if shortcode.nil?
-        404
-      else
-        200
-      end
-    end
 
     # @method api_create_shortcode
     # @overload post '/shortcodes'

@@ -15,6 +15,7 @@ gem 'rqrcode'
 
 group :development do
 	gem "dotenv"
+	gem "pry"
 end
 
 # These are the dependencies that are used only for unit tests.

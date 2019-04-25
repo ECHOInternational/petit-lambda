@@ -329,6 +329,11 @@ describe 'Petit App' do
         head '/shortcodes/abc123', {}, 'HTTPS' => 'on'
         expect(last_response.body).to be_empty
       end
+      it "returns a CORS header" do
+        head '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+        expect(last_response.header).to include "Access-Control-Allow-Origin"
+        expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+      end
       context 'when leading path segments are present' do
         it "ignores extra leading path segments" do
           head '/extra/garbage/shortcodes/abc123', {}, 'HTTPS' => 'on'
