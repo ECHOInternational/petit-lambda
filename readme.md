@@ -46,6 +46,15 @@ The table name is appended with the name of the deployed stage.
 	
 	Required.
 
+- **CrossOriginDomain**: Domains allowed to make cross origin requests of the API.
+
+	Affected methods are:
+	- Get /suggestion
+	- Get /shortcodes
+	- Head /shortcodes/:shortcode
+
+	Defaults to '*'
+
 - **ArtifactsBucket**: Bucket name where the artifacts for this application will be stored.
 	
 	Required.
@@ -117,8 +126,7 @@ This install guide assumes that you have Ruby version 2.5 and the AWS CLI alread
 8. Once the stack has deployed successfully you will have just a few additional steps to
    complete to have your service running properly.
 	
-	+ [Enable CORS](#enable-cors) (Optional)
-	+ [Set up a custom domain for your API](#set-up-a-custom-domain-name-for-your-api) (Optional)
+	Now would be a good time to [Set up a custom domain for your API](#set-up-a-custom-domain-name-for-your-api) (Optional)
 
 9. Set the API_BASE_URL
 
@@ -141,11 +149,6 @@ This install guide assumes that you have Ruby version 2.5 and the AWS CLI alread
 
 	Your URL shortener should be ready for use!
 
-### Enable CORS
-If you do not enable cors your URL shortener will still work, but the API will only be able to be called from sites on the same domain from javascript in a browser.
-
-This is easiest to implement directly through the AWS console:
-https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html#how-to-cors-console
 
 ### Set up a custom domain name for your API
 A custom domain name for your API is not required, but can make your urls shorter, and more maintainable (for instance if you ever want to leave API gateway and still need your API to work).

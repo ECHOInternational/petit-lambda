@@ -17,10 +17,42 @@ describe 'Petit App' do
       config.db_table_name = ENV['DB_TABLE_NAME']
       config.api_base_url = ENV['API_BASE_URL']
       config.service_base_url = ENV['SERVICE_BASE_URL']
+      config.cross_origin_domain = ENV['CROSS_ORIGIN_DOMAIN']
+    end
+  end
+
+  describe "options '/suggestion" do
+    it "returns CORS headers" do
+      options '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to include "Access-Control-Allow-Origin"
+      expect(last_response.header).to include "Access-Control-Allow-Methods"
+      expect(last_response.header).to include "Access-Control-Allow-Headers"
+    end
+    it "returns success code 200" do
+      options '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.status).to eq 200
+    end
+    it "allows only specified domain" do
+      options '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+    end
+    it "allows required headers" do
+      options '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Headers"]).to eq 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+    end
+    it "only allows get and options methods" do
+      options '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Methods"]).to eq 'GET,OPTIONS'
     end
   end
 
   describe "get '/suggestion" do
+    it "returns a CORS header" do
+      header 'Accept', 'application/json'
+      get '/suggestion', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to include "Access-Control-Allow-Origin"
+      expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+    end
     context 'when json is requested' do
       it "returns Content-Type of 'application/vnd.api+json'" do
         header 'Accept', 'application/json'
@@ -103,7 +135,38 @@ describe 'Petit App' do
     end
   end
 
+  describe "options '/shortcodes" do
+    it "returns CORS headers" do
+      options '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to include "Access-Control-Allow-Origin"
+      expect(last_response.header).to include "Access-Control-Allow-Methods"
+      expect(last_response.header).to include "Access-Control-Allow-Headers"
+    end
+    it "returns success code 200" do
+      options '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.status).to eq 200
+    end
+    it "allows only specified domain" do
+      options '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+    end
+    it "allows required headers" do
+      options '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Headers"]).to eq 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+    end
+    it "only allows get and options methods" do
+      options '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Methods"]).to eq 'GET,OPTIONS'
+    end
+  end
+
   describe "get '/shortcodes'" do
+    it "returns a CORS header" do
+      header 'Accept', 'application/json'
+      get '/shortcodes', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to include "Access-Control-Allow-Origin"
+      expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+    end
     context 'when json is requested' do
       it "returns Content-Type of 'application/vnd.api+json'" do
         header 'Accept', 'application/json'
@@ -275,7 +338,37 @@ describe 'Petit App' do
     end
   end
 
+  describe "options '/shortcodes/:shortcode" do
+    it "returns CORS headers" do
+      options '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to include "Access-Control-Allow-Origin"
+      expect(last_response.header).to include "Access-Control-Allow-Methods"
+      expect(last_response.header).to include "Access-Control-Allow-Headers"
+    end
+    it "returns success code 200" do
+      options '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.status).to eq 200
+    end
+    it "allows only specified domain" do
+      options '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Origin"]).to eq Petit.configuration.cross_origin_domain
+    end
+    it "allows required headers" do
+      options '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Headers"]).to eq 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+    end
+    it "only allows head and options methods" do
+      options '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.header["Access-Control-Allow-Methods"]).to eq 'HEAD,OPTIONS'
+    end
+  end
+
   describe "get '/shortcodes/:shortcode'" do
+    it "does not return a CORS header" do
+      header 'Accept', 'application/json'
+      get '/shortcodes/abc123', {}, 'HTTPS' => 'on'
+      expect(last_response.header).to_not include "Access-Control-Allow-Origin"
+    end
     context 'when json is requested' do
       context 'when the shortcode is present' do
         it "returns Content-Type of 'application/vnd.api+json'" do
@@ -391,6 +484,7 @@ describe 'Petit App' do
         expect(found.name).to eq 'testcodejson'
         expect(found.destination).to eq 'www.testcodejson.io'
         expect(found.ssl?).to be true
+        expect(last_response.header).to_not include "Access-Control-Allow-Origin"
       end
     end
     context 'when shortcode does not already exist' do
@@ -522,6 +616,14 @@ describe 'Petit App' do
             'HTTPS' => 'on'
           )
           expect(last_response).to be_ok
+        end
+        it "does not return a CORS header" do
+          put(
+            '/shortcodes/abc124',
+            { 'destination' => 'www.google.com' },
+            'HTTPS' => 'on'
+          )
+          expect(last_response.header).to_not include "Access-Control-Allow-Origin"
         end
         it 'updates the destination' do
           put(

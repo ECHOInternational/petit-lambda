@@ -23,6 +23,7 @@ module Petit
     # Finds and returns zero or more shortcode objects based on their destination.
     # Parameters can either be submitted as form values or in the body as JSONAPI objects
     get '*/shortcodes' do
+      response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
       if params[:destination]
         shortcodes = Petit::Shortcode.find_by_destination(params[:destination])
         return_shortcode_collection(shortcodes)
@@ -36,20 +37,38 @@ module Petit
     # Returns a random shortcode name that is not currently in use in the system.
     # @todo add parameter to specify length.
     get '*/suggestion' do
+      response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
       return_suggestion
     end
 
-    # @method api_head_shortcode
-    # @overload head 'api/v1/shortcodes/:shortcode'
-    # @param shortcode [String] the shortcode to find in the database
-    # Returns 200 if found 404 if not
-    head '*/shortcodes/:shortcode' do
-      shortcode = Petit::Shortcode.find_by_name(params[:shortcode])
-      if shortcode.nil?
-        404
-      else
-        200
-      end
+    # @method api_options_suggestion
+    # @overload options '/suggestion'
+    # Returns CORS headers for the suggestion methods
+    options '*/suggestion' do
+      response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
+      response.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
+      response.headers['Access-Control-Allow-Headers'] = 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+      200
+    end
+
+    # @method api_options_shortcodes
+    # @overload options '/shortcodes'
+    # Returns CORS headers for the shortcodes methods
+    options '*/shortcodes' do
+      response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
+      response.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
+      response.headers['Access-Control-Allow-Headers'] = 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+      200
+    end
+
+    # @method api_options_shortcodes
+    # @overload options '/shortcodes/:shortcode'
+    # Returns CORS headers for the shortcode instance methods
+    options '*/shortcodes/:shortcode' do
+      response.headers['Access-Control-Allow-Origin'] = Petit.configuration.cross_origin_domain
+      response.headers['Access-Control-Allow-Methods'] = 'HEAD,OPTIONS'
+      response.headers['Access-Control-Allow-Headers'] = 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+      200
     end
 
     # @method api_get_shortcode
@@ -63,6 +82,19 @@ module Petit
         return_not_found
       else
         return_shortcode(shortcode)
+      end
+    end
+
+    # @method api_head_shortcode
+    # @overload head 'api/v1/shortcodes/:shortcode'
+    # @param shortcode [String] the shortcode to find in the database
+    # Returns 200 if found 404 if not
+    head '*/shortcodes/:shortcode' do
+      shortcode = Petit::Shortcode.find_by_name(params[:shortcode])
+      if shortcode.nil?
+        404
+      else
+        200
       end
     end
 
