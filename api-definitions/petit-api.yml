@@ -79,12 +79,10 @@ paths:
         schema:
           type: "string"
       - name: "destination"
-        required: true
         in: "query"
         schema:
           type: "string"
       - name: "name"
-        required: true
         in: "query"
         schema:
           type: "string"

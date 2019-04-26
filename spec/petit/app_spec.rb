@@ -480,7 +480,7 @@ describe 'Petit App' do
             }
           }
         }
-        header 'Content-type', 'application/vnd.api+json'
+        header 'Content-Type', 'application/vnd.api+json'
         header 'Accept', 'application/vnd.api+json'
         post '/shortcodes', json_body.to_json, 'HTTPS' => 'on'
         expect(last_response.status).to eq 201

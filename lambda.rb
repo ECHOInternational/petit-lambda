@@ -44,6 +44,14 @@ def handler(event:, context:)
     end
   # Rack expects the querystring in plain text, not a hash
   querystring = Rack::Utils.build_query(event['queryStringParameters']) if event['queryStringParameters']
+
+  # Header names are case-insensitive, this allows us to access the hash of 
+  # headers using all lowercase keys no matter what was passed to the function
+  downcased_headers = {}
+  unless event['headers'].nil?
+    event['headers'].each { |key, value| downcased_headers[key.downcase] = value }
+  end
+
   # Environment required by Rack (http://www.rubydoc.info/github/rack/rack/file/SPEC)
   env = {
     'REQUEST_METHOD' => event['httpMethod'],
@@ -52,7 +60,7 @@ def handler(event:, context:)
     'QUERY_STRING' => querystring || '',
     'SERVER_NAME' => 'localhost',
     'SERVER_PORT' => 443,
-    'CONTENT_TYPE' => event.dig('headers', 'content-type'),
+    'CONTENT_TYPE' => downcased_headers['content-type'],
     'rack.version' => Rack::VERSION,
     'rack.url_scheme' => 'https',
     'rack.input' => StringIO.new(body || ''),
