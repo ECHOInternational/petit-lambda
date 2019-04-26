@@ -1,5 +1,5 @@
 current directory: /Users/npflood/Source/petit-lambda/vendor/bundle/ruby/2.5.0/gems/json-2.2.0/ext/json
-/Users/npflood/.rvm/rubies/ruby-2.5.1/bin/ruby -r ./siteconf20190425-72710-1wctv6t.rb extconf.rb
+/Users/npflood/.rvm/rubies/ruby-2.5.1/bin/ruby -r ./siteconf20190426-16422-1w7rvmy.rb extconf.rb
 creating Makefile
 
 current directory: /Users/npflood/Source/petit-lambda/vendor/bundle/ruby/2.5.0/gems/json-2.2.0/ext/json
