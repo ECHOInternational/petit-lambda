@@ -90,7 +90,7 @@ Resources:
         ApplicationName: "Petit URL Shortener"
       CodeUri: "./redirector-app"
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs14.x
       MemorySize: 128
       Timeout: 3
       Policies:
@@ -111,7 +111,7 @@ Resources:
         ApplicationName: "Petit URL Shortener"
       CodeUri: "./"
       Handler: lambda.handler
-      Runtime: ruby2.5
+      Runtime: ruby2.7
       Environment: 
         Variables:
           DB_TABLE_NAME: !Ref PetitDatabase

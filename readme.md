@@ -62,9 +62,9 @@ The table name is appended with the name of the deployed stage.
 
 ## Installation
 
-This install guide assumes that you have Ruby version 2.5 and the AWS CLI already installed.
+This install guide assumes that you have Ruby version 2.7 and the AWS CLI already installed.
 
-1. Ensure that you are using Ruby 2.5.x and install Bundler (version 1.x)
+1. Ensure that you are using Ruby 2.7.x and install Bundler
 2. Clone this repository to your local computer
 3. Install the ruby dependencies for the API service
 	```Bash

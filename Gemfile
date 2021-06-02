@@ -3,15 +3,15 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'json', '~> 2'
 gem 'jsonapi-serializers'
-gem "rack", ">= 1.6.11"
+gem "rack"
 gem 'rack-contrib'
 gem 'rack-parser'
 gem 'aws-record'
-gem 'aws-sdk', '~> 2'
+gem 'aws-sdk-dynamodb', '~> 1'
 gem 'rake'
 gem 'rubysl-base64'
-gem 'activesupport', '~> 4.2.3'
-gem 'rqrcode'
+gem 'activesupport'
+gem 'rqrcode', '~> 0.10.1'
 
 group :development do
 	gem "dotenv"
