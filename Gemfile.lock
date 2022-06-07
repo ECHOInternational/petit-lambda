@@ -28,7 +28,7 @@ GEM
     dotenv (2.7.6)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
-    jmespath (1.4.0)
+    jmespath (1.6.1)
     json (2.5.1)
     jsonapi-serializers (1.0.1)
       activesupport
