@@ -62,90 +62,50 @@ The table name is appended with the name of the deployed stage.
 
 ## Installation
 
-This install guide assumes that you have Ruby version 2.7 and the AWS CLI already installed.
+This install guide assumes that you have Ruby 3.3, the AWS CLI, the AWS SAM CLI, and Docker already installed.
 
-1. Ensure that you are using Ruby 2.7.x and install Bundler
-2. Clone this repository to your local computer
-3. Install the ruby dependencies for the API service
+> **Deploying a change to an existing stack?** See **[DEPLOY.md](DEPLOY.md)** for the build → deploy → release runbook, including the `live` alias canary and one-command rollback. The steps below are for standing up a brand-new instance.
+
+1. Clone this repository to your local computer.
+
+2. (Optional — only needed to run the test suite locally) install the Ruby dependencies with Ruby 3.3:
 	```Bash
 	$ bundle install
 	```
-4. Download the gems locally, as you'll need local copies for your deploy package
-	```Bash
-	$ bundle install --deployment
-	```
-5. Upload the Swagger File to S3
+	Gems are **not** vendored into the repo. The deployment package is produced by `sam build` (next step), which installs the gems inside a Lambda-compatible container — required so the API's native gems are compiled for the Lambda runtime.
 
-	Note: This requires that you have an S3 bucket in which to store both this file, and the package artifacts. If you don't, you'll need to create one in the account that your AWS CLI is set up to use.
-	
+3. Build the deployment artifacts:
+	```Bash
+	$ sam build --use-container
+	```
+
+4. Upload the API definition (Swagger) to S3.
+
+	The template pulls `petit-api.yml` from S3 via an `AWS::Include` transform, so it must be present in the bucket before each deploy. (You need an S3 bucket for this file and the build artifacts; create one in your account if you don't have one.)
 	```Bash
 	$ aws s3 cp ./api-definitions/petit-api.yml s3://{ your-bucket-name }/
 	```
-	This is necessary because the swagger file requires transformation, and must be present on S3 before the next steps so it can be transformed.
 
-6. Create the deplopyment package.
+5. Deploy the stack.
+
+	The first time, use guided mode and save the answers to `samconfig.toml`:
 	```Bash
-	 $ aws cloudformation package \
-     --template-file template.yaml \
-     --output-template-file serverless-output.yaml \
-     --s3-bucket { your-bucket-name }
+	$ sam deploy --guided
 	```
-	If you have the SAM CLI installed the equivalent command is:
+	You will be prompted for the stack name, region, and the template parameters (`Stage`, `ServiceBaseUrl`, `NotFoundDestination`, `ApiBaseUrl`, `CrossOriginDomain`, `ArtifactsBucket`). The API function's `API_BASE_URL` is set from the `ApiBaseUrl` parameter, so no manual environment-variable step is needed. On subsequent deploys just run:
 	```Bash
-	 $ sam package \
-     --template-file template.yaml \
-     --output-template-file serverless-output.yaml \
-     --s3-bucket { your-bucket-name }
-     ```
-     SAM provides the ability to test Lambda functions and APIs locally, if  you are doing any lambda development
-     this is a good idea.
+	$ sam deploy
+	```
 
-7. Deploy the stack to cloudformation
-	```Bash
-	 $ aws cloudformation deploy \
-	 --template-file serverless-output.yaml \
-     --stack-name { your-stack-name } \
-     --capabilities CAPABILITY_IAM \
-     --parameter-overrides NotFoundDestination={ your-not-found-destination } \
-     ArtifactsBucket={ your-bucket-name } \
-     ServiceBaseUrl={ your-base-url } \
-     ApiBaseUrl={ your-api-base-url }
-    ```
-    The SAM equivalent:
-    ```Bash
-     $ sam deploy \
-     --template-file serverless-output.yaml \
-     --stack-name { your-stack-name } \
-     --capabilities CAPABILITY_IAM \
-     --parameter-overrides NotFoundDestination={ your-not-found-destination } \
-     ArtifactsBucket={ your-bucket-name } \
-     ServiceBaseUrl={ your-base-url } \
-     ApiBaseUrl={ your-api-base-url }
-    ```
+6. Once the stack has deployed successfully, a couple of manual steps wire it up.
 
-8. Once the stack has deployed successfully you will have just a few additional steps to
-   complete to have your service running properly.
-	
-	Now would be a good time to [Set up a custom domain for your API](#set-up-a-custom-domain-name-for-your-api) (Optional)
+	Now would be a good time to [Set up a custom domain for your API](#set-up-a-custom-domain-name-for-your-api) (Optional).
 
-9. Set the API_BASE_URL
+7. Connect your Application Load Balancer to the redirector.
 
-	Whether or not you customize your API Url you should still set the Environment Variable on the PetitApiFunction so that the json responses contain the correct URL. 
+	You will need an Application Load Balancer with a short domain (e.g. `goto.link`) pointed at it via DNS. Creating the ALB is beyond the scope of this document — see the [AWS documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancer-getting-started.html).
 
-	Set the `API_BASE_URL` to either the API Gateway address for the stage you're using or the custom domain that you have configured. (Remember that you may need to add the base path mapping and/or the stage name to the end of the custom domain name).
-
-	**NOTE:** you can get the API Gateway Address needed here from the outputs section of the Cloudformation Stack. It is labeled `API Endpoint URL`. (If anyone can figure out how to set this automatically without causing a circular dependency I would accept your pull request with great joy.)
-
-	The AWS Documentation is helpful if you don't know how to change environment variables on Lambda functions.
-	https://docs.aws.amazon.com/lambda/latest/dg/env_variables.html
-
-10. Connect your Application Load Balancer to your PetitRedirector function
-
-	You will need an API load balancer with a domain pointed at it through dns. For instance you want a very short domain name like goto.link (but of course you already know this or you wouldn't be creating a url shortener).
-
-	Creating an Application Load Balancer is beyond the scope of this document. For instructions see the AWS documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancer-getting-started.html
-	
-	Once your load balancer is is place you should point traffic coming in from your domain on port 80 to your `PetitRedirectorFunction` lambda function.
+	Point your domain's traffic at the **`live` alias** of the redirector — `PetitRedirectorFunction-{Stage}:live` — not the bare function. Production is always served through the `live` alias so that new versions can be released and rolled back by moving the alias (see [DEPLOY.md](DEPLOY.md)). The API Gateway integrations are already wired to the API function's `live` alias by the template.
 
 	Your URL shortener should be ready for use!
 
