@@ -22,4 +22,4 @@ tmp
 *.o
 *.a
 mkmf.log
-serverless-output.yaml
+serverless-output.yamlvendor/bundle/
