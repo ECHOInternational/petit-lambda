@@ -44,7 +44,7 @@ paths:
                 $ref: "#/components/schemas/ShortcodeCollection"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     options:
@@ -64,7 +64,7 @@ paths:
                 type: "string"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     post:
@@ -135,7 +135,7 @@ paths:
       - api_key: []
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
   /suggestion:
@@ -162,7 +162,7 @@ paths:
                 $ref: "#/components/schemas/Suggestion"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     options:
@@ -182,7 +182,7 @@ paths:
                 type: "string"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
   /shortcodes/{shortcode}:
@@ -229,7 +229,7 @@ paths:
       - api_key: []
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     put:
@@ -302,7 +302,7 @@ paths:
       - api_key: []
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     delete:
@@ -348,7 +348,7 @@ paths:
       - api_key: []
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     options:
@@ -368,7 +368,7 @@ paths:
                 type: "string"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
     head:
@@ -380,7 +380,7 @@ paths:
           type: "string"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PetitAPIFunction.Arn}:live/invocations
         httpMethod: "POST"
         type: "aws_proxy"
       responses:

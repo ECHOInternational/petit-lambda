@@ -10,6 +10,34 @@ describe 'Petit App' do
     Petit::App
   end
 
+  # Seed the read-only fixtures that the "when the shortcode is present" and
+  # "when records exist" examples rely on. Done once for the file via a direct
+  # DynamoDB client (independent of Petit configuration) and removed afterward,
+  # so the suite passes against a clean table without manual seeding.
+  before(:context) do
+    require 'aws-sdk-dynamodb'
+    ddb = Aws::DynamoDB::Client.new
+    table = ENV['DB_TABLE_NAME']
+    ddb.put_item(table_name: table, item: {
+      'shortcode' => 'abc123', 'destination' => 'www.example.com/abc-fixture',
+      'ssl' => true, 'access_count' => 0, 'created_at' => 0, 'updated_at' => 0
+    })
+    ddb.put_item(table_name: table, item: {
+      'shortcode' => 'yh0001', 'destination' => 'www.yahoo.com',
+      'ssl' => false, 'access_count' => 0, 'created_at' => 0, 'updated_at' => 0
+    })
+    # Give the destinationIndex GSI a moment to propagate for the
+    # find_by_destination ("when records exist") examples.
+    sleep 3
+  end
+
+  after(:context) do
+    ddb = Aws::DynamoDB::Client.new
+    table = ENV['DB_TABLE_NAME']
+    ddb.delete_item(table_name: table, key: { 'shortcode' => 'abc123' })
+    ddb.delete_item(table_name: table, key: { 'shortcode' => 'yh0001' })
+  end
+
   before(:example) do
     Petit.reset
     # Set configuration values using these environment variables.

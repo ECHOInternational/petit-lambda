@@ -43,7 +43,7 @@ module Petit
     # @param ssl [String, Integer, Boolean] the value to set the ssl flag
     # @return [Boolean] the ssl flag value of the object
     def ssl=(ssl)
-      @ssl = if ssl == true || ssl =~ /(true|t|yes|y|1)$/i
+      @ssl = if ssl == true || (ssl.is_a?(String) && ssl =~ /(true|t|yes|y|1)$/i)
                true
              else
                false

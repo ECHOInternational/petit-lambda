@@ -1,6 +1,7 @@
 var config = require("./config");
-var AWS = require("aws-sdk");
-var docClient = new AWS.DynamoDB.DocumentClient();
+var { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+var { DynamoDBDocumentClient, GetCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
+var docClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 module.exports = {
     cleanShortcode: function(shortcode) {
         return shortcode.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
@@ -27,7 +28,9 @@ module.exports = {
             'TableName': config.properties.table_name,
             'Key':{ "shortcode": shortcode }
         };
-        docClient.get(params, callback);
+        docClient.send(new GetCommand(params))
+            .then(function(data){ callback(null, data); })
+            .catch(function(err){ callback(err); });
     },
     hit_shortcode: function(shortcode, callback) {
         let params = {
@@ -38,6 +41,8 @@ module.exports = {
             'UpdateExpression': 'SET access_count = access_count + :one',
             'ExpressionAttributeValues': { ':one': 1 }
         };
-        docClient.update(params, callback);
+        docClient.send(new UpdateCommand(params))
+            .then(function(data){ callback(null, data); })
+            .catch(function(err){ callback(err); });
     }
 };

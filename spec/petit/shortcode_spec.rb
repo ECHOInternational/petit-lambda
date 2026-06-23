@@ -156,6 +156,26 @@ describe Petit::Shortcode do
         destination: 'www.test.me',
         ssl: true
       )
+      # Ensure the record already exists so the save below conflicts. Seeded
+      # directly (not via #save) and removed afterward, so the example passes
+      # against a clean table.
+      before(:example) do
+        Aws::DynamoDB::Client.new.put_item(
+          table_name: ENV['DB_TABLE_NAME'],
+          item: {
+            'shortcode' => 'testshortcodeunsuccessful',
+            'destination' => 'www.test.me',
+            'ssl' => true, 'access_count' => 0,
+            'created_at' => 0, 'updated_at' => 0
+          }
+        )
+      end
+      after(:example) do
+        Aws::DynamoDB::Client.new.delete_item(
+          table_name: ENV['DB_TABLE_NAME'],
+          key: { 'shortcode' => 'testshortcodeunsuccessful' }
+        )
+      end
       it 'raises ShortcodeAlreadyExists error' do
         expect { shortcode.save }.to raise_exception(Petit::ShortcodeAccessError)
       end
