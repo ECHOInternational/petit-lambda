@@ -44,6 +44,10 @@ Parameters:
 Resources:
   PetitDatabase:
     Type: AWS::DynamoDB::Table
+    # Protect production shortcodes + hit counts: never delete/replace this
+    # table on a stack update or delete.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       Tags:
         -
@@ -90,13 +94,20 @@ Resources:
         ApplicationName: "Petit URL Shortener"
       CodeUri: "./redirector-app"
       Handler: index.handler
-      Runtime: nodejs14.x
+      Runtime: nodejs22.x
       MemorySize: 128
       Timeout: 3
       Policies:
         -
           DynamoDBReadPolicy:
             TableName: !Ref PetitDatabase
+        # Needed for the redirect hit counter (shortcodes.js hit_shortcode).
+        -
+          Statement:
+            -
+              Effect: Allow
+              Action: dynamodb:UpdateItem
+              Resource: !GetAtt PetitDatabase.Arn
       Environment:
         Variables:
           NOT_FOUND_DESTINATION: !Ref NotFoundDestination
@@ -111,7 +122,7 @@ Resources:
         ApplicationName: "Petit URL Shortener"
       CodeUri: "./"
       Handler: lambda.handler
-      Runtime: ruby2.7
+      Runtime: ruby3.3
       Environment: 
         Variables:
           DB_TABLE_NAME: !Ref PetitDatabase
@@ -138,11 +149,12 @@ Resources:
         EndpointConfiguration: "EDGE"
   ConfigLambdaPermission:
     Type: "AWS::Lambda::Permission"
-    DependsOn:
-      - PetitAPIFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref PetitAPIFunction
+      # API Gateway invokes the function through its "live" alias (see the
+      # ":live" qualifier on the integration uris in api-definitions/petit-api.yml).
+      # The alias is managed as a manual canary pointer, not by this stack.
+      FunctionName: !Sub "${PetitAPIFunction}:live"
       Principal: apigateway.amazonaws.com
 Outputs:
    APIEndpoint:

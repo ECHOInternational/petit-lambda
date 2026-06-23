@@ -1,0 +1,19 @@
+version = 0.1
+
+# Production deploy configuration for the petit URL shortener.
+# Values mirror the live `petit-production` stack (us-east-1). See DEPLOY.md.
+
+[default.global.parameters]
+stack_name = "petit-production"
+
+[default.build.parameters]
+# Required: builds the ruby3.3 function (incl. native gems) for Amazon Linux x86_64.
+use_container = true
+
+[default.deploy.parameters]
+stack_name = "petit-production"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+resolve_s3 = true
+confirm_changeset = true
+parameter_overrides = "Stage=\"v2\" ServiceBaseUrl=\"http://edn.link\" NotFoundDestination=\"https://www.echocommunity.org/404.html\" ApiBaseUrl=\"https://api.echocommunity.org/links/v2\" CrossOriginDomain=\"*\" ArtifactsBucket=\"serverless.echocommunity.org\""
